@@ -20,9 +20,9 @@ ansible-pull -U https://github.com/cfios4/mediasvr-pull.git -d /home/$RESU
 mkdir -p /home/$RESU/swarmConfigs/apps/{caddy,flame,plex,radarr,sonarr,sabnzbd,vscode}
 
 # Test if $TS_KEY is defined
-if [ -z "$TS_KEY" ]; then
+if [ -z "$TS_API" ]; then
     # Variable is empty, ask for input
-    read -p "Please enter Tailscale API key: " TS_KEY
+    read -p "Please enter Tailscale API key: " TS_API
 fi
 
 # Join Tailnet
