@@ -9,7 +9,7 @@ curl -fsSL https://tailscale.com/install.sh | bash
 systemctl enable docker --now
 systemctl enable tailscaled --now
 
-# Set $USER variable
+# Set $RESU variable
 if [ -z "$RESU" ]; then
     # Variable is empty, ask for input
     read -p "Enter new local user's name: " RESU
@@ -31,6 +31,9 @@ fi
 # Join Tailnet
 export TS_KEY=$(curl -s -H "Authorization: Bearer $TS_API" -d '{"capabilities":{"devices":{"create":{"reusable":false,"ephemeral":false,"preauthorized":true}}}}' https://api.tailscale.com/api/v2/tailnet/-/keys | grep -o '"key":"[^"]*"' | sed 's/"key":"\(.*\)"/\1/')
 tailscale up --auth-key=$TS_KEY --operator $RESU --ssh
+
+# Set $TAILSCALEIP
+echo $(tailscale ip -4) >> /home/$RESU/.bashrc
 
 # Ansible pull repo
 ansible-pull -U https://github.com/cfios4/mediasvr-pull.git -d /home/$RESU
