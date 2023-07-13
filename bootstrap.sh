@@ -17,7 +17,7 @@ systemctl enable docker --now
 systemctl enable tailscaled --now
 
 # Create directories for app bind mounts
-mkdir -p /home/$RESU/swarmConfigs/apps/{caddy/{serve},flame,plex,radarr,sonarr,sabnzbd,vscode}
+mkdir -p /home/$RESU/swarmConfigs/apps/{caddy/serve,flame,plex,radarr,sonarr,sabnzbd,vscode}
 
 # Test if $TS_KEY is defined
 if [ -z "$TS_API" ]; then
