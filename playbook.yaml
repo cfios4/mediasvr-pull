@@ -1,5 +1,5 @@
 ---
-- name: Configure Docker Swarm node with Syncthing and Tailscale
+- name: Self-provisioning mediasvr
   hosts: localhost
   become: true
   tasks:
@@ -11,7 +11,7 @@
       regexp: '^SELINUX='
       line: SELINUX=passive
 
-    # Setup Docker      
+    # Setup Docker
   - name: Enable Docker
     systemd:
       name: docker
@@ -31,7 +31,7 @@
 
   - name: Clone repo
     become: yes
-    become_user: "{{USER}}"
+    become_user: "{{RESU}}"
     git:
       repo: https://github.com/cfios4/mediasvr-pull.git # Contains Dockerfile, compose.yaml, bootstrap.sh, and playbook.yaml
       dest: ~/swarmConfigs/
