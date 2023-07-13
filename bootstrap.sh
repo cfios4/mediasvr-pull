@@ -20,7 +20,7 @@ useradd -m -G wheel,docker -u 1000 $RESU
 passwd -e $RESU
 
 # Create directories for app bind mounts
-mkdir -p /home/$RESU/swarmConfigs/apps/{caddy/serve,flame,plex,radarr,sonarr,sabnzbd,vscode}
+mkdir -p /home/$RESU/swarmConfigs/appdata/{caddy/serve,flame,plex,radarr,sonarr,sabnzbd,vscode}
 
 # Test if $TS_KEY is defined
 if [ -z "$TS_API" ]; then
