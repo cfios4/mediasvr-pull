@@ -32,7 +32,7 @@ services:
             admin $$2a$$14$$59fq3dJu7BMgI4os7Z11sOqPUjAsZIg9QFytUDIfVR64v8NlA56Ge
           }
 
-          file_server /serve/
+          file_server /srv
         }
 
         # Plex reverse proxy
@@ -69,6 +69,7 @@ services:
         }
     command: sh -c 'printenv CADDYFILE > /config/Caddyfile && caddy run --config /config/Caddyfile --adapter caddyfile'
     volumes:
+      - ~/swarmConfigs/apps/caddy/serve:/srv
       - ~/swarmConfigs/apps/caddy:/data
       - ~/swarmConfigs/apps/caddy:/config
 
