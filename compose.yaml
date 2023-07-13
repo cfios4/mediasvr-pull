@@ -168,7 +168,8 @@ services:
         RUN groupadd -g $DOCKER_GID docker && \
             usermod -aG docker abc && \
             touch /var/run/docker.sock && \
-            chown :docker /var/run/docker.sock
+            chown :docker /var/run/docker.sock && \
+            printf "alias 'terraform'='docker run --rm -v $PWD:/workspace -w /workspace -it hashicorp/terraform'\nalias 'packer'='docker run --rm -v $PWD:/workspace -w /workspace -it hashicorp/packer'" >> /etc/bash.bashrc
       args: 
         DOCKER_GID: $(cut -d: -f3 < <(getent group docker))
     image: vscode-dind:latest
