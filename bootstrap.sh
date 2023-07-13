@@ -1,11 +1,4 @@
 #!/bin/bash
-# Set $USER variable
-read -p "Enter new local user's name: " RESU
-
-# Set UID 1000 to $RESU
-useradd -m -G wheel,docker -u 1000 $RESU
-passwd -e $RESU
-
 # Baseline stuff
 dnf upgrade -y
 dnf install ansible -y
@@ -15,6 +8,16 @@ curl -fsSL https://get.docker.com/ | bash
 curl -fsSL https://tailscale.com/install.sh | bash
 systemctl enable docker --now
 systemctl enable tailscaled --now
+
+# Set $USER variable
+if [ -z "$RESU" ]; then
+    # Variable is empty, ask for input
+    read -p "Enter new local user's name: " RESU
+fi
+
+# Set UID 1000 to $RESU
+useradd -m -G wheel,docker -u 1000 $RESU
+passwd -e $RESU
 
 # Create directories for app bind mounts
 mkdir -p /home/$RESU/swarmConfigs/apps/{caddy/serve,flame,plex,radarr,sonarr,sabnzbd,vscode}
