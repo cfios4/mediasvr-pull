@@ -33,7 +33,7 @@
     become: yes
     become_user: "{{RESU}}"
     git:
-      repo: https://github.com/cfios4/mediasvr-pull.git # Contains Dockerfile, compose.yaml, bootstrap.sh, and playbook.yaml
+      repo: https://github.com/cfios4/mediasvr-pull.git # Contains compose.yaml, bootstrap.sh, and playbook.yaml
       dest: ~/swarmConfigs/
 
   # System configurations for firewall  
