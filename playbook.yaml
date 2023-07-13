@@ -1,0 +1,59 @@
+---
+- name: Configure Docker Swarm node with Syncthing and Tailscale
+  hosts: localhost
+  become: true
+  tasks:
+
+  # Screw SELinux
+  - name: Ensure SELinux is set to passive mode
+    lineinfile:
+      path: /etc/selinux/config
+      regexp: '^SELINUX='
+      line: SELINUX=passive
+
+    # Setup Docker      
+  - name: Enable Docker
+    systemd:
+      name: docker
+      state: started
+      enabled: yes
+  
+  - name: Init a new swarm with Tailscale advertised address
+    shell: docker swarm init --advertise-addr {{TAILSCALEIP}}
+    register: swarm_init
+    changed_when: "'initialized' in swarm_init.stdout"
+
+  # Use Git instead of Syncthing. Clone repo, docker swarm deploy....
+  - name: Install Git
+    dnf:
+      name: git
+      state: present
+
+  - name: Clone repo
+    become: yes
+    become_user: "{{USER}}"
+    git:
+      repo: https://github.com/cfios4/mediasvr-pull.git # Contains Dockerfile, compose.yaml, bootstrap.sh, and playbook.yaml
+      dest: ~/swarmConfigs/
+
+  # System configurations for firewall  
+  - name: Configure Firewall-cmd ports
+    become: yes
+    firewalld:
+      zone: public
+      port: "{{item}}"
+      immediate: true
+      permanent: true
+      state: enabled
+    with_items:
+      - 80/tcp # HTTP
+      - 443/tcp # HTTPS
+      - 32400/tcp # PLEX
+      - 41641/udp # TAILSCALE
+    
+  - name: Set default zone to 'public'
+    become: yes
+    shell: firewall-cmd --set-default-zone=public
+    register: default_zone_set
+    changed_when: '"ZONE_ALREADY_SET" not in default_zone_set.stderr'
+      - "REMEMBER: Get Plex claim token before starting compose stack!!!"
