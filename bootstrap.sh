@@ -7,7 +7,7 @@ if [ $OS = 'debian' ]; then
     apt update -y
     apt upgrade -y
     apt install ansible git -y
-elif [ $OS = 'rhel centos fedora' ]; then
+elif [ $OS = 'fedora' ]; then
     dnf upgrade -y
     dnf install ansible git -y
 elif [ $OS = 'alpine' ]; then
