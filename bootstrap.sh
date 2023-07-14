@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Get OS
-OS=$(grep "^ID=" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+OS=$(grep "^ID_LIKE=" /etc/os-release | cut -d'=' -f2 | tr -d '"')
 
 if [ $OS = 'debian' ]; then
     apt update -y
     apt upgrade -y
     apt install ansible git -y
-elif [ $OS = 'fedora' ]; then
+elif [ $OS = 'rhel centos fedora' ]; then
     dnf upgrade -y
     dnf install ansible git -y
 elif [ $OS = 'alpine' ]; then
