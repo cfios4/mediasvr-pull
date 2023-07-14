@@ -1,7 +1,7 @@
 #!/bin/bash
 # Baseline stuff
 dnf upgrade -y
-dnf install ansible -y
+dnf install ansible git -y
 
 # Install Docker and Tailscale
 curl -fsSL https://get.docker.com/ | bash
