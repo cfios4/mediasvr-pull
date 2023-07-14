@@ -23,12 +23,6 @@
     register: swarm_init
     changed_when: "'initialized' in swarm_init.stdout"
 
-  # Use Git instead of Syncthing. Clone repo, docker swarm deploy....
-  - name: Install Git
-    dnf:
-      name: git
-      state: present
-
   - name: Clone repo
     become: yes
     become_user: "{{RESU}}"
