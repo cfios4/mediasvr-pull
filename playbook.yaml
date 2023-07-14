@@ -11,25 +11,6 @@
       regexp: '^SELINUX='
       line: SELINUX=passive
 
-    # Setup Docker
-  - name: Enable Docker
-    systemd:
-      name: docker
-      state: started
-      enabled: yes
-  
-  - name: Init a new swarm with Tailscale advertised address
-    shell: docker swarm init --advertise-addr {{TAILSCALEIP}}
-    register: swarm_init
-    changed_when: "'initialized' in swarm_init.stdout"
-
-  - name: Clone repo
-    become: yes
-    become_user: "{{RESU}}"
-    git:
-      repo: https://github.com/cfios4/mediasvr-pull.git # Contains compose.yaml, bootstrap.sh, and playbook.yaml
-      dest: ~/swarmConfigs/
-
   # System configurations for firewall  
   - name: Configure Firewall-cmd ports
     become: yes
@@ -50,4 +31,3 @@
     shell: firewall-cmd --set-default-zone=public
     register: default_zone_set
     changed_when: '"ZONE_ALREADY_SET" not in default_zone_set.stderr'
-      - "REMEMBER: Get Plex claim token before starting compose stack!!!"
