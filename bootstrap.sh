@@ -78,4 +78,4 @@ echo $(tailscale ip -4) >> /home/$RESU/.bashrc
 docker swarm init --advertise-addr $TAILSCALEIP > /dev/null
 
 # Ansible pull repo
-ansible-pull -U https://github.com/cfios4/mediasvr-pull.git -d /home/$RESU
+ansible-pull -U https://github.com/cfios4/mediasvr-pull.git -d /home/$RESU/
