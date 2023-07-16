@@ -38,7 +38,7 @@ systemctl enable tailscaled --now
 # Set $RESU variable
 if [ -z "$RESU" ]; then
     if [ -f "/tmp/RESU_exist" ]; then
-        return 0
+        break
     else
         # Variable is empty, ask for input
         clear
@@ -48,7 +48,7 @@ if [ -z "$RESU" ]; then
 # Test if $TS_API is defined
 elif [ -z "$TS_API" ]; then
     if [ -f "/tmp/TSAPI_exist" ]; then
-        return 0
+        break
     else
         # Variable is empty, ask for input
         clear
