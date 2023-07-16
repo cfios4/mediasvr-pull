@@ -1,22 +1,33 @@
 #!/bin/bash
 
 # Get OS
-OS=$(grep "^ID=" /etc/os-release | cut -d'=' -f2 | tr -d '"')
+os=$(uname -s)
 
-if ["$OS" = 'debian'] ; then
-    apt update -y
-    apt upgrade -y
-    apt install ansible git -y
-elif ["$OS" = 'fedora'] ; then
-    dnf upgrade -y
-    dnf install ansible git -y
-elif ["$OS" = 'alpine'] ; then
-    dnf upgrade -y
-    dnf install ansible git -y
-else
-    echo "Can't recognize operating system from /etc/os-release!"
-    exit
-fi
+# Function to install packages using the detected package manager
+install_packages() {
+    if [ -x "$(command -v apt)" ]; then
+        sudo apt update
+        sudo apt install -y "$@"
+    elif [ -x "$(command -v dnf)" ]; then
+        sudo dnf update
+        sudo dnf install -y "$@"
+    elif [ -x "$(command -v pacman)" ]; then
+        sudo pacman -Syu
+        sudo pacman -S --noconfirm "$@"
+    elif [ -x "$(command -v pkg)" ]; then
+        sudo pkg update
+        sudo pkg install -y "$@"
+    else
+        echo "Unsupported package manager"
+        exit 1
+    fi
+}
+
+# Install packages based on the detected operating system
+case "$os" in
+    Linux*) install_packages ansible git ;;
+    *) echo "Unsupported operating system" ; exit 1 ;;
+esac
 
 # Install Docker and Tailscale
 curl -fsSL https://get.docker.com/ | bash
