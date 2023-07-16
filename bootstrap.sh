@@ -47,16 +47,19 @@ elif [ -z "$TS_API" ]; then
     read -p "Please enter Tailscale API key: " TS_API
 fi
 
+# Check if $TS_KEY and $RESU are set
+if [ -n "$RESU" ] && [ -n "$TS_API" ] ; then
+    # Join Tailnet
+    export TS_KEY=$(curl -s -H "Authorization: Bearer $TS_API" -d '{"capabilities":{"devices":{"create":{"reusable":false,"ephemeral":false,"preauthorized":true}}}}' https://api.tailscale.com/api/v2/tailnet/-/keys | grep -o '"key":"[^"]*"' | sed 's/"key":"\(.*\)"/\1/')
+    tailscale up --auth-key=$TS_KEY --operator $RESU --ssh
+fi
+
 # Set UID 1000 to $RESU
 useradd -m -G wheel,docker -u 1000 $RESU
 passwd -e $RESU > /dev/null
 
 # Create directories for app bind mounts
 mkdir -p /home/$RESU/swarmConfigs/appdata/{caddy/serve,flame,plex,radarr,sonarr,sabnzbd,vscode}
-
-# Join Tailnet
-export TS_KEY=$(curl -s -H "Authorization: Bearer $TS_API" -d '{"capabilities":{"devices":{"create":{"reusable":false,"ephemeral":false,"preauthorized":true}}}}' https://api.tailscale.com/api/v2/tailnet/-/keys | grep -o '"key":"[^"]*"' | sed 's/"key":"\(.*\)"/\1/')
-tailscale up --auth-key=$TS_KEY --operator $RESU --ssh
 
 # Set $TAILSCALEIP
 echo $(tailscale ip -4) >> /home/$RESU/.bashrc
