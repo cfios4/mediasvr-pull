@@ -6,16 +6,16 @@ os=$(uname -s)
 # Function to install packages using the detected package manager
 install_packages() {
     if [ -x "$(command -v apt)" ]; then
-        sudo apt update
+        sudo apt update -y
         sudo apt install -y "$@"
     elif [ -x "$(command -v dnf)" ]; then
-        sudo dnf update
+        sudo dnf update -y
         sudo dnf install -y "$@"
     elif [ -x "$(command -v pacman)" ]; then
         sudo pacman -Syu
         sudo pacman -S --noconfirm "$@"
     elif [ -x "$(command -v pkg)" ]; then
-        sudo pkg update
+        sudo pkg update -y
         sudo pkg install -y "$@"
     else
         echo "Unsupported package manager"
