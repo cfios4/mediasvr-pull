@@ -37,14 +37,24 @@ systemctl enable tailscaled --now
 
 # Set $RESU variable
 if [ -z "$RESU" ]; then
-    # Variable is empty, ask for input
-    clear
-    read -p "Enter new local Docker user's name: " RESU
+    if [ -f "/tmp/RESU_exist" ]; then
+        return 0
+    else
+        # Variable is empty, ask for input
+        clear
+        read -p "Enter new local Docker user's name: " RESU
+        touch /tmp/RESU_exist
+    fi
 # Test if $TS_API is defined
 elif [ -z "$TS_API" ]; then
-    # Variable is empty, ask for input
-    clear
-    read -p "Please enter Tailscale API key: " TS_API
+    if [ -f "/tmp/TSAPI_exist" ]; then
+        return 0
+    else
+        # Variable is empty, ask for input
+        clear
+        read -p "Please enter Tailscale API key: " TS_API
+        touch /tmp/TSAPI_exist
+    fi
 fi
 
 # Check if $TS_KEY and $RESU are set
