@@ -3,13 +3,12 @@ version: 3.2.0
 
 passwd:
   groups:
-    - name: mygroup
-      gid: 1000
+    - name: docker
 
   users:
     - name: casey
       sshAuthorizedKeys:
-        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8vB18QG...
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD4Q1Cay7PADzS9WuoNg/IOgmPOXfBLX6N18NmgxY71ymGj+R9pXex5yDkHWoNBKmZN48JAwa3wHYsg4k60kgcp+ixJr5HDIaHO98h+6doPBsotFXX686aBhYIP5j/JpgHgwohb+EzLzS/z+s7HPlUSOPYqTwM7lCP6i5HmPPbvQ8X0csPLEajv9+VXqP1CowKbdgqYB8i/v+KB++MS52RJPrczqB1GrAs4rSGuv2BzXfgRZgC6wJNS+w8zYtfoxEWLDq825n2WODLQ6Ku46vqrfxUe0zAV9570H3/cb248jttFEEHHd6xQv11AMN0q4tv/PFE+uuLqoouCUEyywnum0mhTRwmU/dQp01mNfe91cjBWF8rCv+s/S0MwKxUBGS0cfe6Zxyk7rZhefHctNt4S3YlHD5xlhJmtJ543lg+cjEHBeYO4fMur48xDw0aQJkS5xa1FMR7Jga2X14ZvrVESK5v5ixS4wqijUGV/qXJ1bdyPPpnmzFBOHttXZm7liX0= casey@GamingPC
       groups: [wheel, docker]
 
 storage:
@@ -27,30 +26,7 @@ storage:
             name: /
             options: [defaults, noatime]
 
-systemd:
-  units:
-    - name: etcd-member.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=etcd member
-        Documentation=https://github.com/coreos/etcd
-        [Service]
-        ExecStart=/usr/bin/etcd
-        Restart=always
-        [Install]
-        WantedBy=multi-user.target
-
-networkd:
-  units:
-    - name: 00-eth.network
-      contents: |
-        [Match]
-        Name=eth0
-        [Network]
-        DHCP=ipv4
-
-files:
+  files:
   - path: /home/casey/downloaded-file.txt
     filesystem: root
     contents:
@@ -64,10 +40,32 @@ files:
       id: 1000
       name: casey
 
-ssh:
-  authorizedKeys:
-    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8vB18QG...
+  - path: /home/casey/.ssh/id_rsa
+    filesystem: root
+    contents:
+      source: https://github.com/cfios4.keys
+    mode: 0600
+    user:
+      id: 1000
+      name: casey
+    group:
+      id: 1000
+      name: casey
 
+systemd:
+  units:
+    - name: etcd-member.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=etcd member
+        Documentation=https://github.com/coreos/etcd
+        [Service]
+        ExecStart=/usr/bin/etcd
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target
+        
 ignition:
   config:
     replace:
