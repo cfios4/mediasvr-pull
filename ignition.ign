@@ -1,0 +1,58 @@
+variant: fcos
+version: 3.2.0
+
+passwd:
+  users:
+    - name: myuser
+      sshAuthorizedKeys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8vB18QG...
+
+storage:
+  disks:
+    - device: /dev/sda
+      partitions:
+        - label: root
+          number: 1
+          size: 512MB
+          startMiB: 2048
+          growPart: true
+          filesystem: xfs
+          wipeFilesystem: true
+          mount:
+            name: /
+            options: [defaults, noatime]
+
+systemd:
+  units:
+    - name: etcd-member.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=etcd member
+        Documentation=https://github.com/coreos/etcd
+        [Service]
+        ExecStart=/usr/bin/etcd
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target
+
+networkd:
+  units:
+    - name: 00-eth.network
+      contents: |
+        [Match]
+        Name=eth0
+        [Network]
+        DHCP=ipv4
+
+ssh:
+  authorizedKeys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8vB18QG...
+
+ignition:
+  config:
+    replace:
+      source: http://example.com/myconfig.ign
+    append:
+      - source: http://example.com/append.ign
+
