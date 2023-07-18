@@ -1,8 +1,47 @@
 ---
-- name: Self-provisioning mediasvr
+- name: Configure Docker Swarm node with Syncthing and Tailscale
   hosts: localhost
   become: true
+  vars_files: .env
   tasks:
+
+  # Tools needed for initial password creation
+  - name: Install dependencies for password creation
+    dnf:
+      name: 
+        - pwgen
+        - mkpasswd
+      state: present
+
+  # Password for {{USER}}
+  - name: Generate random password for {{USER}}
+    shell: pwgen -Bv 8 1 # Generate a password using non-ambiguous characters (I, l, 0, O,...), without vowels, 8 characters long, 1 time
+    register: changeme # Assigned to variable, ```changeme```
+
+  # Hash password
+  - name: Hash password
+    shell: "echo {{changeme.stdout}} | mkpasswd  -m sha-512 -s"
+    register: hashedpw
+
+  # Create {{USER}}
+  - name: Create the user and add to docker group
+    user:
+      name: "{{USER}}"
+      password: "{{hashedpw.stdout}}"
+      state: present
+      shell: /bin/bash
+      groups: docker
+      append: true
+      update_password: on_create
+
+  - name: Print password of {{USER}}
+    debug:
+      msg: 
+      - "The password for {{USER}} is: {{changeme.stdout}}"
+      - "Please login as {{USER}} and change the passwd."
+
+  - name: Force {{USER}} to change password
+    shell: passwd -e {{USER}} # Expire {{USER}}'s password, forcing a change at login
 
   # Screw SELinux
   - name: Ensure SELinux is set to passive mode
@@ -10,6 +49,83 @@
       path: /etc/selinux/config
       regexp: '^SELINUX='
       line: SELINUX=passive
+  
+  # Get authkey and store in TAILSCALEKEY
+  - name: Get Tailscale auth-key
+    shell: >
+      curl -H "Authorization: Bearer {{TAILSCALEAPI}}" -d '{"capabilities":{"devices":{"create":{"reusable":false,"ephemeral":false,"preauthorized":true}}}}' https://api.tailscale.com/api/v2/tailnet/-/keys | grep -o '"key":"[^"]*"' | sed 's/"key":"\(.*\)"/\1/'
+    register: tailscale_key_output
+  - set_fact:
+      TAILSCALEKEY: "{{tailscale_key_output.stdout}}"
+
+  # Setup Tailscale
+  - name: Enable Tailscale service
+    systemd:
+      name: tailscaled
+      state: started
+      enabled: yes
+      
+  - name: Auth Tailscale and start
+    shell: tailscale up --auth-key {{TAILSCALEKEY}} --ssh
+
+  # Add global TAILSCALEIP environment variable
+  - name: Set environment TAILSCALEIP variable
+    lineinfile:
+      dest: /etc/profile
+      line: '{{item}}'
+      state: present
+    with_items: 
+      - 'export TAILSCALEIP=$(tailscale ip -4)'
+      
+  # Uses Docker to run Terraform and Packer as opposed to installing natively
+  - name: Add Terraform and Packer aliases
+    lineinfile:
+      dest: /etc/bashrc
+      line: '{{item}}'
+      state: present
+    with_items:
+      - "alias terraform='docker run --rm -v $PWD:/workspace -w /workspace -it hashicorp/terraform'"
+      - "alias packer='docker run --rm -v $PWD:/workspace -w /workspace -it hashicorp/packer'"
+
+  # Store the IP into TAILSCALEIP
+  - name: Get Tailscale IP
+    shell: tailscale ip -4
+    register: tailscale_ip_output
+  - set_fact:
+      TAILSCALEIP: "{{tailscale_ip_output.stdout}}"
+  
+  - name: Test vars
+    debug:
+      var: '{{item}}'
+    with_items:
+      - TAILSCALEKEY
+      - TAILSCALEIP
+      - GITHUBUSER
+
+    # Setup Docker      
+  - name: Enable Docker
+    systemd:
+      name: docker
+      state: started
+      enabled: yes
+  
+  - name: Init a new swarm with Tailscale advertised address
+    shell: docker swarm init --advertise-addr {{TAILSCALEIP}}
+    register: swarm_init
+    changed_when: "'initialized' in swarm_init.stdout"
+
+  # Use Git instead of Syncthing. Clone repo, docker swarm deploy....
+  - name: Install Git
+    dnf:
+      name: git
+      state: present
+
+  - name: Clone repo
+    become: yes
+    become_user: "{{USER}}"
+    git:
+      repo: https://{{GITHUBUSER}}:{{GITHUBKEY}}@github.com/cfios4/media.git # Requires key because it's a private repo
+      dest: ~/swarmConfigs/
 
   # System configurations for firewall  
   - name: Configure Firewall-cmd ports
@@ -31,3 +147,10 @@
     shell: firewall-cmd --set-default-zone=public
     register: default_zone_set
     changed_when: '"ZONE_ALREADY_SET" not in default_zone_set.stderr'
+
+  - name: End of Playbook
+    debug:
+      msg:
+      - "The playbook has successfully completed. Please login to '{{USER}}' and use password '{{changeme.stdout}}'."
+      - "Once logged in, navigate to ~/swarmConfigs/ and run post_playbook.sh to run final commands."
+      - "REMEMBER: Get Plex claim token before starting compose stack!!!"
