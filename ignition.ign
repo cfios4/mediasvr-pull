@@ -2,10 +2,15 @@ variant: fcos
 version: 3.2.0
 
 passwd:
+  groups:
+    - name: mygroup
+      gid: 1000
+
   users:
-    - name: myuser
+    - name: casey
       sshAuthorizedKeys:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8vB18QG...
+      groups: [wheel, docker]
 
 storage:
   disks:
@@ -45,6 +50,20 @@ networkd:
         [Network]
         DHCP=ipv4
 
+files:
+  - path: /home/casey/downloaded-file.txt
+    filesystem: root
+    contents:
+      source: https://raw.githubusercontent.com/your-username/your-repository/main/downloaded-file.txt
+      verification: {}
+    mode: 0644
+    user:
+      id: 1000
+      name: casey
+    group:
+      id: 1000
+      name: casey
+
 ssh:
   authorizedKeys:
     - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8vB18QG...
@@ -55,4 +74,3 @@ ignition:
       source: http://example.com/myconfig.ign
     append:
       - source: http://example.com/append.ign
-
