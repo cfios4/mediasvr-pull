@@ -1,12 +1,13 @@
+# podman run -i --rm quay.io/coreos/butane --pretty --strict < ignition.bu > ignition.ign
 variant: fcos
-version: 3.2.0
+version: 1.5.0
 
-ignition:
-  config:
-    replace:
-      source: http://example.com/myconfig.ign
-    append:
-      - source: http://example.com/append.ign
+# ignition:
+#   config:
+#     replace:
+#       source: http://example.com/myconfig.ign
+#     append:
+#       - source: http://example.com/append.ign
 
 passwd:
   groups:
@@ -14,7 +15,7 @@ passwd:
 
   users:
     - name: casey
-      sshAuthorizedKeys:
+      ssh_authorized_keys:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD4Q1Cay7PADzS9WuoNg/IOgmPOXfBLX6N18NmgxY71ymGj+R9pXex5yDkHWoNBKmZN48JAwa3wHYsg4k60kgcp+ixJr5HDIaHO98h+6doPBsotFXX686aBhYIP5j/JpgHgwohb+EzLzS/z+s7HPlUSOPYqTwM7lCP6i5HmPPbvQ8X0csPLEajv9+VXqP1CowKbdgqYB8i/v+KB++MS52RJPrczqB1GrAs4rSGuv2BzXfgRZgC6wJNS+w8zYtfoxEWLDq825n2WODLQ6Ku46vqrfxUe0zAV9570H3/cb248jttFEEHHd6xQv11AMN0q4tv/PFE+uuLqoouCUEyywnum0mhTRwmU/dQp01mNfe91cjBWF8rCv+s/S0MwKxUBGS0cfe6Zxyk7rZhefHctNt4S3YlHD5xlhJmtJ543lg+cjEHBeYO4fMur48xDw0aQJkS5xa1FMR7Jga2X14ZvrVESK5v5ixS4wqijUGV/qXJ1bdyPPpnmzFBOHttXZm7liX0= casey@GamingPC
       groups: [wheel, docker]
 
@@ -22,28 +23,15 @@ storage:
   disks:
     - device: /dev/sda
       partitions:
-        - label: root
+        - label: 0
           number: 1
-          size: 0 # As large as possible
-          startMiB: 0 # Start at largest block available
-          growPart: true
-          filesystem: xfs
-          wipeFilesystem: true
-          mount:
-            name: /
-            options: [defaults, noatime]
-
-  files:
-    - path: /home/casey/downloaded-file.txt
-      contents:
-        source: https://raw.githubusercontent.com/your-username/your-repository/main/downloaded-file.txt
-      mode: 0644
-      user:
-        id: 1000
-        name: casey
-      group:
-        id: 1000
-        name: casey
+          size_mib: 0 # As large as possible
+          start_mib: 0 # Start at largest block available
+  filesystems: 
+    - device: /dev/disk/by-partlabel/ # lsblk -o NAME,MOUNTPOINT,PARTLABEL // ls -l /dev/disk/by-label
+      format: ext4
+      path: /
+      wipe_filesystem: true
 
   files:
     - path: /etc/hostname
@@ -65,12 +53,4 @@ systemd:
         Restart=always
         [Install]
         WantedBy=multi-user.target
-
-networkd:
-  units:
-    - name: 00-eth.network
-      contents: |
-        [Match]
-        Name=eth0
-        [Network]
-        DHCP=ipv4
+        
