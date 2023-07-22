@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: caddy
 data:
-  key: value
+  Caddyfile: |
+    ...
