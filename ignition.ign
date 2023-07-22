@@ -24,7 +24,7 @@
   "storage": {
     "disks": [
       {
-        "device": "/dev/sda",
+        "device": "/dev/vda",
         "partitions": [
           {
             "label": "0",
