@@ -1,0 +1,58 @@
+{
+  "ignition": {
+    "version": "3.4.0"
+  },
+  "passwd": {
+    "groups": [
+      {
+        "name": "docker"
+      }
+    ],
+    "users": [
+      {
+        "groups": [
+          "wheel",
+          "docker"
+        ],
+        "name": "casey",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD4Q1Cay7PADzS9WuoNg/IOgmPOXfBLX6N18NmgxY71ymGj+R9pXex5yDkHWoNBKmZN48JAwa3wHYsg4k60kgcp+ixJr5HDIaHO98h+6doPBsotFXX686aBhYIP5j/JpgHgwohb+EzLzS/z+s7HPlUSOPYqTwM7lCP6i5HmPPbvQ8X0csPLEajv9+VXqP1CowKbdgqYB8i/v+KB++MS52RJPrczqB1GrAs4rSGuv2BzXfgRZgC6wJNS+w8zYtfoxEWLDq825n2WODLQ6Ku46vqrfxUe0zAV9570H3/cb248jttFEEHHd6xQv11AMN0q4tv/PFE+uuLqoouCUEyywnum0mhTRwmU/dQp01mNfe91cjBWF8rCv+s/S0MwKxUBGS0cfe6Zxyk7rZhefHctNt4S3YlHD5xlhJmtJ543lg+cjEHBeYO4fMur48xDw0aQJkS5xa1FMR7Jga2X14ZvrVESK5v5ixS4wqijUGV/qXJ1bdyPPpnmzFBOHttXZm7liX0= casey@GamingPC"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "disks": [
+      {
+        "device": "/dev/sda",
+        "partitions": [
+          {
+            "label": "0",
+            "sizeMiB": 0,
+            "startMiB": 0
+          }
+        ]
+      }
+    ],
+    "files": [
+      {
+        "overwrite": true,
+        "path": "/etc/hostname",
+        "contents": {
+          "compression": "",
+          "source": "data:,coreos"
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=etcd member\nDocumentation=https://github.com/coreos/etcd\n[Service]\nExecStart=/usr/bin/etcd\nRestart=always\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "etcd-member.service"
+      }
+    ]
+  }
+}
