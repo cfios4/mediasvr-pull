@@ -24,14 +24,14 @@ storage:
     - device: /dev/sda
       partitions:
         - label: 0
-          number: 1
+          number: 0
           size_mib: 0 # As large as possible
           start_mib: 0 # Start at largest block available
-  filesystems: 
-    - device: /dev/disk/by-partlabel/ # lsblk -o NAME,MOUNTPOINT,PARTLABEL // ls -l /dev/disk/by-label
-      format: ext4
-      path: /
-      wipe_filesystem: true
+#  filesystems: 
+#    - device: /dev/disk/by-partlabel/ # lsblk -o NAME,MOUNTPOINT,PARTLABEL // ls -l /dev/disk/by-label
+#      format: ext4
+#      path: /
+#      wipe_filesystem: true
 
   files:
     - path: /etc/hostname
