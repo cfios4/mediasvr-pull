@@ -14,9 +14,17 @@ spec:
       containers:
       - name: caddy
         image: caddy:latest
+        volumeMounts:
+        - name: caddyfile
+          mountPath: /etc/caddy/Caddyfile
+          subPath: Caddyfile
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
+      volumes:
+      - name: caddyfile
+        configMap:
+          name: caddyfile
         ports:
         - containerPort: 80
