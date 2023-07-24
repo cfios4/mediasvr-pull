@@ -16,7 +16,7 @@ spec:
           service:
             name: flame-service
             port:
-              number: 80
+              number: 5005
 
   - host: media.cafio.co
     http:
@@ -43,17 +43,6 @@ spec:
             port:
               number: 8080
 
-  - host: cloud.cafio.co
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: nextcloud-service
-            port:
-              number: 80
-
   - host: code.cafio.co
     http:
       paths:
@@ -63,7 +52,7 @@ spec:
           service:
             name: code-service
             port:
-              number: 80
+              number: 8443
 
   - host: drop.cafio.co
     http:
@@ -74,4 +63,4 @@ spec:
           service:
             name: pairdrop-service
             port:
-              number: 80
+              number: 3000
