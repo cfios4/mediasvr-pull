@@ -1,8 +1,8 @@
 # mediasvr-pull
 Self-provisioning server that replicates my media server setup
 
-[ ] Create manifests \n
-[ ] Create Alpine setup-file
+[] Create manifests
+[] Create Alpine setup-file
 
 1. Create CoreOS machine
 2. Install CoreOS with ```sudo coreos-install install -I https://raw.githubusercontent.com/cfios4/ignition.ign```
