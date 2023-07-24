@@ -1,7 +1,7 @@
 # mediasvr-pull
 Self-provisioning server that replicates my media server setup
 
-[ ] Create manifests
+[ ] Create manifests \n
 [ ] Create Alpine setup-file
 
 1. Create CoreOS machine
