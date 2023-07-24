@@ -6,13 +6,72 @@ metadata:
     name: caddy
 spec:
   rules:
+  
   - host: cafio.co
     http:
-      paths:
-      - pathType: Prefix
-        path: "/"
+      paths: 
+      - path: /
+        pathType: Prefix
         backend:
           service:
-            name: <Service>
-            port: 
-              number: <Port>
+            name: flame-service
+            port:
+              number: 80
+
+  - host: media.cafio.co
+    http:
+      paths:
+      - path: /radarr
+        pathType: Prefix
+        backend:
+          service:
+            name: radarr-service
+            port:
+              number: 7878
+      - path: /sonarr
+        pathType: Prefix
+        backend:
+          service:
+            name: sonarr-service
+            port:
+              number: 8989
+      - path: /sabnzbd
+        pathType: Prefix
+        backend:
+          service:
+            name: sabnzbd-service
+            port:
+              number: 8080
+
+  - host: cloud.cafio.co
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nextcloud-service
+            port:
+              number: 80
+
+  - host: code.cafio.co
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: code-service
+            port:
+              number: 80
+
+  - host: drop.cafio.co
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pairdrop-service
+            port:
+              number: 80
