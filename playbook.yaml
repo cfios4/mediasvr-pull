@@ -121,7 +121,7 @@
       state: present
 
   - name: Clone repo
-    become: yes
+    become: true
     become_user: "{{USER}}"
     git:
       repo: https://{{GITHUBUSER}}:{{GITHUBKEY}}@github.com/cfios4/media.git # Requires key because it's a private repo
@@ -129,7 +129,7 @@
 
   # System configurations for firewall  
   - name: Configure Firewall-cmd ports
-    become: yes
+    become: true
     firewalld:
       zone: public
       port: "{{item}}"
@@ -143,7 +143,7 @@
       - 41641/udp # TAILSCALE
     
   - name: Set default zone to 'public'
-    become: yes
+    become: true
     shell: firewall-cmd --set-default-zone=public
     register: default_zone_set
     changed_when: '"ZONE_ALREADY_SET" not in default_zone_set.stderr'
