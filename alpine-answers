@@ -28,7 +28,7 @@ TIMEZONEOPTS="-z EST"
 # PROXYOPTS="http://webproxy:8080"
 
 # Add a random mirror
-APKREPOSOPTS="-r"
+APKREPOSOPTS="http://dl-cdn.alpinelinux.org/alpine/ "
 
 # Install Openssh
 SSHDOPTS="-c openssh"
