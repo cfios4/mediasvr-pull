@@ -25,7 +25,7 @@ iface eth0 inet dhcp
 TIMEZONEOPTS="-z EST"
 
 # set http/ftp proxy
-# PROXYOPTS="http://webproxy:8080"
+PROXYOPTS="none"
 
 # Add a random mirror
 APKREPOSOPTS="http://dl-cdn.alpinelinux.org/alpine/ "
@@ -33,8 +33,8 @@ APKREPOSOPTS="http://dl-cdn.alpinelinux.org/alpine/ "
 # Install Openssh
 SSHDOPTS="-c openssh"
 
-# Use openntpd
-NTPOPTS="-c openntpd"
+# Use chrony
+NTPOPTS="-c chrony"
 
 # Use /dev/sda as a sys disk
 DISKOPTS="-m sys /dev/sda"
