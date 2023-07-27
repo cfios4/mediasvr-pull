@@ -42,4 +42,3 @@ DISKOPTS="-m sys /dev/sda"
 # Setup in /media/sdb1
 # LBUOPTS="/media/sdb1"
 # APKCACHEOPTS="/media/sdb1/cache"
-
